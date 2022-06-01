@@ -16,3 +16,5 @@
 | Recupera un game                                                      | GET    | /games/:id(.:format)            | games#show           | id                  | {game: @game}    | { message: "No esta #{params[:id]}"} |
 | Crea un nuevo game                                                    | POST   | /games(.:format)                | games#create         | plaer1_id, gameName | {game: @game}    | {message: @game.errors.details}      |
 | Muestra todos los games en espera de un segundo jugador para empiezar | GET    | /games/indexOpenGames(.:format) | games#indexOpenGames | Ninguno             | {games: @games}  | No se muestra ni un games            |
+| Un jugador se une a un game                                           | PUT    | /games/:id(.:format)            | games#update         | gameId, player2_id  | {game: @game}    | {message: @game.errors.details}      |
+| Un jugador hace un movimiento y lo guardo en el back                  | PUT    | /games/:id/saveResult(.:format) | games#saveResult     | gameId, result      | {game: @game}    | {message: @game.errors.details}      |
