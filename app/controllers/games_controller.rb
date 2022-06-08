@@ -40,12 +40,14 @@ class GamesController < ApplicationController
     def saveResult
         @game=Game.find_by(id: params[:gameId])
         return if @game.winner!=0 #No me deja jugar si ya hay un ganador
+
         @game.result=params[:result]
         @game.turn=@game.turn+1 #Incremento el turno en 1, porque marcar una celda representa un turno
 
         resultado=@game.result.split(",") #Paso el resultado desde string a array
 
         #Empieza el codigo que averigua si alguien ganò. Tengo que correrlo cada vez que un jugador marca una celda
+        #Un metodo check_win seria un metodo de instancia, entonces habria que ponerlo en el model y acà simplemente @game.check_win
         combinacionesGanadoras = [
                 [0, 1, 2],
                 [3, 4, 5],

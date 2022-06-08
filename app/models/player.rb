@@ -1,7 +1,6 @@
 class Player < ApplicationRecord
 
-    #relaciones
-    #has_many :games, inverse_of: "Player"
+
     #validaciones
     validates :name, presence: true
 

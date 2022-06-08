@@ -41,7 +41,7 @@ class PlayersController < ApplicationController
     end
 
     def set_player
-        @player=Player.find_by(name: params[:id]) #Asi busco por name, pero id està fijo porque està en la ruta
+        @player=Player.find_by(name: params[:id]) #Estoy usando el name como id. En la route tengo /:id y no le importa si es un numero o uno string
         return if @player.present? #retorna inmediatamente si @player existe. Si no existe, sigue
 
         render status: 404, json: { message: "No esta #{params[:id]}"}
