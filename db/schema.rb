@@ -17,7 +17,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_11_211002) do
   create_table "games", force: :cascade do |t|
     t.bigint "player1_id"
     t.bigint "player2_id"
-    t.string "gameName"
+    t.string "game_name"
     t.string "result", default: ",,,,,,,,"
     t.integer "turn", default: 0
     t.integer "winner", default: 0

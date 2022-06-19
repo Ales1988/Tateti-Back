@@ -3,16 +3,23 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
-  resources :players
-  resources :games do
+  resources :players, except: [:update, :destroy, :new, :edit] do
+    member do
+      get :login
+    end
+  end
+
+  
+  resources :games, except: [:update, :destroy, :new, :edit] do
 
     member do
-      put :saveResult
+      put :join
+      put :save_result
     end
  
 
     collection do #collection porque no va a apuntar a un game especifico, sino a una collection
-      get :indexOpenGames #este action lo voy a usar para mostrar los games disponibles
+     # get :indexOpenGames No lo uso porque es mejor usar el index con parámetros de búsqueda. No lo borro para no olvidarme de este concepto.
     end
   end
 end

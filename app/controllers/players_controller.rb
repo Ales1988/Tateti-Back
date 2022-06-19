@@ -1,9 +1,8 @@
 class PlayersController < ApplicationController
 
     #esto callback se ejectua en los actions elencado despues de only
-	before_action :set_player, only:[ :show, :update, :destroy] #no me sirve identificar un
-                                                                #player especifico en el index, create
-    #before_action :check_token, only: [:index, :show, :update, :destroy] No lo uso porque se me complicò en el front
+	before_action :check_token, only: [ :show]
+    
     def index
         @players = Player.all
         render status: 200, json: {players: @players}
@@ -18,35 +17,21 @@ class PlayersController < ApplicationController
         player_save
     end
 
-     #No tuve tiempo de implementarlo en el front
-    def update
-        @player.assign_attributes(player_params)
-        player_save
+    #En el login el usuario introduce nombre y contraseña para recuperar el token que se guarda en la sesión del front
+    #Ej request http://127.0.0.1:3000/players/Ale/login?password=ale
+    def login
+         @player=Player.where(name: params[:id], password: params[:password])
+         if @player.present?
+            render status: 200, json: {player: @player}
+         else
+            render status: 404, json: {message: "No existe el jugador o la contraseña es incorrecta."}
+         end
     end
-
-    #No tuve tiempo de implementarlo en el front
-    def destroy
-        if @player.destroy
-            render status: 200
-        else
-            render status: 400, json: {message: @player.errors.details}
-        end
-    end
-
 
     #Empiezan mi methods
     #Sirve para que acepte solo el name y la password de una request
     def player_params
         params.require(:player).permit(:name, :password)
-    end
-
-    def set_player
-        @player=Player.find_by(name: params[:id]) #Estoy usando el name como id. En la route tengo /:id y no le importa si es un numero o uno string
-        return if @player.present? #retorna inmediatamente si @player existe. Si no existe, sigue
-
-        render status: 404, json: { message: "No esta #{params[:id]}"}
-		false #el false sirve para no ir al show. Porque si player es blank, no puedo seguir
-				#con mi action. Si no pongo false, despues del render sigue
     end
 
     #Guarda en la base de datos
@@ -58,12 +43,16 @@ class PlayersController < ApplicationController
         end
     end
 
-    #Sirve para verificar quien està haciendo la request
+    #Verifica la identidad del usuario a través del token que envía el front (después de haberlo guardado gracias al login)
+    #Esto hace innecesario un método set_user
     def check_token
-        return if request.headers["Authorization"]=="Bearer #{@player.token}"
+        token = request.headers["Authorization"].split(" ") #Tengo que usar split porque el front envía "Bearer token" y solo necesito el token.
+        @player=Player.find_by(token: token[1])#En token[0] queda "Bearer"
+
+        return if @player.present?
         #dejar espacio despues de return para buena costumbre. Si la condicion de if se cumple, la 
         #funcion retorna. Sino sigue con render status
-        render status: 401, json:["Token equivocado!"]
+        render status: 401, json:{message: "Debe iniciar sesión con un usuario válido"}#Si llega a esta línea de código, significa que se ha introducido manualmente un token incorrecto en el front en lugar de seguir el procedimiento normal de inicio de sesión
         false #false necesario para que no se ejecute el action que ha llamado check_token como callback
     end
     
